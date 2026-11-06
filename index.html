@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example Developer Edge App</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d16;color:#edf2ff;font-family:Inter,Arial,sans-serif}
+button,input{font:inherit}
+.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 0,#29385d,transparent 55%)}
+.login-card{width:min(420px,100%);padding:35px;border:1px solid #34415b;border-radius:24px;background:#111827dd;backdrop-filter:blur(20px);box-shadow:0 25px 90px #0007}
+.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#a9baff,#77e4d8);display:grid;place-items:center;color:#101827;font-weight:900;font-size:23px}
+.login h1{font-size:27px;margin:22px 0 7px}
+p{color:#929fb7;line-height:1.6;font-size:13px}
+input{width:100%;padding:13px;border-radius:10px;border:1px solid #34415b;background:#0b1220;color:white;outline:none;margin:10px 0}
+input:focus{border-color:#9aafff}
+.btn{border:0;border-radius:10px;padding:12px 17px;background:#c5d2ff;color:#10182c;font-weight:800;cursor:pointer}
+.login .btn{width:100%;margin-top:10px}
+.error{color:#ff8e9c;min-height:20px;font-size:12px}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{padding:25px 17px;background:#0c111d;border-right:1px solid #222d40}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;margin-bottom:40px}
+.brand-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#a9baff,#77e4d8);display:grid;place-items:center;color:#101827}
+.nav{display:grid;gap:8px}
+.nav a{padding:11px;border-radius:10px;color:#aab5cb;text-decoration:none;font-size:13px}
+.nav a:hover{background:#1a2538;color:white}
+main{padding:35px;max-width:1400px;width:100%;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
+.small{font-size:11px;color:#8794ad}
+.hero{padding:40px;border:1px solid #35415c;border-radius:22px;background:linear-gradient(120deg,#19243a,#13272e)}
+.hero h1{font-size:clamp(32px,5vw,55px);line-height:1.05;margin:15px 0}
+.gradient{background:linear-gradient(90deg,#b9c8ff,#83e5db);background-clip:text;color:transparent}
+.hero p{max-width:550px}
+.section{margin:35px 0 15px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.section h2{font-size:19px;margin:0}
+.search{max-width:250px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.service{display:block;text-decoration:none;color:white;padding:19px;border:1px solid #263249;border-radius:16px;background:#121a29;transition:.2s}
+.service:hover{transform:translateY(-3px);border-color:#7188c2}
+.service .symbol{font-size:22px}
+.service h3{margin:14px 0 4px;font-size:16px}
+.service p{margin:0}
+.service .url{display:block;color:#9eafff;font-size:11px;margin-top:15px}
+.panel{margin-top:20px;padding:20px;border:1px solid #263249;border-radius:16px;background:#111827}
+.endpoint{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #273044;font-size:12px}
+.endpoint code{overflow-wrap:anywhere}
+.copy{margin-left:auto;background:#202c41;color:#cbd7f4;border:1px solid #394966;padding:6px 9px;border-radius:7px;cursor:pointer}
+.logout{background:#202c41;color:#cbd7f4;border:1px solid #394966;padding:9px 12px;border-radius:9px;cursor:pointer}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.layout{display:block}aside{padding:15px;border-right:0;border-bottom:1px solid #263249}.brand{margin:0 0 12px}.nav{display:flex;overflow:auto}.nav a{white-space:nowrap}main{padding:20px 15px}.grid{grid-template-columns:1fr}.hero{padding:25px}.section{align-items:stretch;flex-direction:column}.search{max-width:none}}
+</style>
+</head>
+<body>
+
+<!-- API KEY LOGIN -->
+<section class="login" id="login">
+ <div class="login-card">
+  <div class="logo">E</div>
+  <h1>Developer <span class="gradient">Workspace</span></h1>
+  <p>Example Developer Edge App'e hoş geldin. Devam etmek için API Key bilgini gir.</p>
+  <form id="loginForm">
+   <input id="apiKey" type="password" placeholder="API Key" autocomplete="off" required>
+   <div class="error" id="error"></div>
+   <button class="btn" type="submit">Workspace'e giriş yap →</button>
+  </form>
+  <p>API anahtarın bu tarayıcıda saklanır.</p>
+ </div>
+</section>
+
+<!-- DASHBOARD -->
+<div class="layout hidden" id="dashboard">
+ <aside>
+  <div class="brand"><div class="brand-icon">E</div><div>EDGE / LAB<br><span class="small">DEVELOPER APP</span></div></div>
+  <nav class="nav">
+   <a href="#overview">◈ Overview</a>
+   <a href="#services">▦ API Services</a>
+   <a href="#quickstart">⌘ Quick Start</a>
+   <a href="#security">⛨ Security</a>
+  </nav>
+ </aside>
+
+ <main>
+  <div class="top">
+   <span class="small">WORKSPACE / OVERVIEW</span>
+   <button class="logout" id="logout">Çıkış yap ↗</button>
+  </div>
+
+  <section class="hero" id="overview">
+   <span class="small">✦ EXAMPLE DEVELOPER EDGE APP</span>
+   <h1>Make things.<br><span class="gradient">Break limits.</span></h1>
+   <p>API servislerini keşfet, projelerini geliştir ve yeni fikirlerini gerçeğe dönüştür. Geliştirici araçların tek bir yerde.</p>
+   <a class="btn" href="#services" style="display:inline-block;text-decoration:none;margin-top:12px">Servisleri keşfet →</a>
+  </section>
+
+  <div class="section" id="services">
+   <h2>API Collection</h2>
+   <input class="search" id="search" placeholder="Servis ara...">
+  </div>
+
+  <div class="grid" id="serviceGrid">
+   <a class="service" data-search="edgeaccount login oauth identity" href="https://hesap.oedge.xyz" target="_blank">
+    <span class="symbol">◉</span><h3>EdgeAccount</h3>
+    <p>OAuth 2.0 ve OpenID Connect kimlik sistemi.</p>
+    <span class="url">hesap.oedge.xyz ↗</span>
+   </a>
+   <a class="service" data-search="kama ai edgetools" href="https://ai.oedge.xyz" target="_blank">
+    <span class="symbol">✳</span><h3>KAMA AI & EdgeTools</h3>
+    <p>AI API ve geliştirici yardımcı araçları.</p>
+    <span class="url">ai.oedge.xyz ↗</span>
+   </a>
+   <a class="service" data-search="edgeconvert pdf file conversion" href="https://convert.oedge.xyz" target="_blank">
+    <span class="symbol">⤧</span><h3>EdgeConvert</h3>
+    <p>Dosya dönüştürme ve PDF araçları.</p>
+    <span class="url">convert.oedge.xyz ↗</span>
+   </a>
+   <a class="service" data-search="blufy media download" href="https://blufy.oedge.xyz" target="_blank">
+    <span class="symbol">⇩</span><h3>Blufy</h3>
+    <p>Medya bilgileri ve indirme işlemleri.</p>
+    <span class="url">blufy.oedge.xyz ↗</span>
+   </a>
+   <a class="service" data-search="edgeanket survey forms" href="https://anket.oedge.xyz" target="_blank">
+    <span class="symbol">▤</span><h3>EdgeAnket</h3>
+    <p>Anket oluşturma ve sonuçları görüntüleme.</p>
+    <span class="url">anket.oedge.xyz ↗</span>
+   </a>
+   <a class="service" data-search="edgedisk storage files" href="https://disk.edgemailtr.com" target="_blank">
+    <span class="symbol">▱</span><h3>EdgeDisk</h3>
+    <p>Bulut dosya alanı ve paylaşım.</p>
+    <span class="url">disk.edgemailtr.com ↗</span>
+   </a>
+  </div>
+
+  <section class="panel" id="quickstart">
+   <h3>Quick Start / API Routes</h3>
+   <p>Hızlı erişim için API adresleri.</p>
+   <div class="endpoint"><code>GET · https://ai.oedge.xyz/v1/models</code><button class="copy">Kopyala</button></div>
+   <div class="endpoint"><code>POST · https://ai.oedge.xyz/v1/chat/completions</code><button class="copy">Kopyala</button></div>
+   <div class="endpoint"><code>GET · https://convert.oedge.xyz/api/bicimler</code><button class="copy">Kopyala</button></div>
+   <div class="endpoint"><code>POST · https://blufy.oedge.xyz/api/job/start</code><button class="copy">Kopyala</button></div>
+  </section>
+
+  <section class="panel" id="security">
+   <h3>Security Center</h3>
+   <p>API Key bilgilerini asla herkese açık kodlara koyma. Bu giriş ekranı yalnızca arayüz kilididir; gerçek API erişim kontrolü sunucu tarafında yapılmalıdır.</p>
+  </section>
+ </main>
+</div>
+
+<script>
+const login=document.getElementById("login");
+const dashboard=document.getElementById("dashboard");
+const form=document.getElementById("loginForm");
+const keyInput=document.getElementById("apiKey");
+const error=document.getElementById("error");
+
+function showDashboard(){
+ login.classList.add("hidden");
+ dashboard.classList.remove("hidden");
+}
+
+if(localStorage.getItem("edge_api_key")){
+ showDashboard();
+}
+
+form.addEventListener("submit",function(e){
+ e.preventDefault();
+ const key=keyInput.value.trim();
+ if(!key){
+  error.textContent="Lütfen API Key gir.";
+  return;
+ }
+ localStorage.setItem("edge_api_key",key);
+ error.textContent="";
+ showDashboard();
+});
+
+document.getElementById("logout").addEventListener("click",()=>{
+ localStorage.removeItem("edge_api_key");
+ location.reload();
+});
+
+document.getElementById("search").addEventListener("input",e=>{
+ const q=e.target.value.toLowerCase();
+ document.querySelectorAll(".service").forEach(card=>{
+  card.style.display=(card.innerText+" "+card.dataset.search).toLowerCase().includes(q)?"block":"none";
+ });
+});
+
+document.querySelectorAll(".copy").forEach(button=>{
+ button.addEventListener("click",async()=>{
+  const text=button.previousElementSibling.textContent.replace(/^(GET|POST) · /,"");
+  try{
+   await navigator.clipboard.writeText(text);
+   button.textContent="Kopyalandı ✓";
+   setTimeout(()=>button.textContent="Kopyala",1200);
+  }catch{
+   button.textContent="Kopyalanamadı";
+  }
+ });
+});
+</script>
+</body>
+</html>
